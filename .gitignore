@@ -154,6 +154,10 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+
+# 排除数据文件夹
+Data/
+
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
