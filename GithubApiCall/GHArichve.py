@@ -9,6 +9,7 @@ StartDate = 2022
 EndDate = 2023
 
 model_name = large_language_models = [
+    "diffusion",
     "mT5",
     "CodeGen",
     "CPM",
