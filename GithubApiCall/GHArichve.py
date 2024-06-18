@@ -5,6 +5,9 @@ import csv
 import requests
 from datetime import datetime, date, timedelta
 
+StartDate = 2022
+EndDate = 2023
+
 model_name = large_language_models = [
     "mT5",
     "CodeGen",
@@ -201,7 +204,7 @@ def download_github_archive_data(search_queries, start_date, end_date, output_fi
 # 示例用法
 download_github_archive_data(
     search_queries=model_name,
-    start_date=date(2020, 1, 1),
-    end_date=date(2023, 6, 1),
+    start_date=date(StartDate, 1, 1),
+    end_date=date(EndDate, 1, 1),
     output_file="github_repos.csv"
 )
