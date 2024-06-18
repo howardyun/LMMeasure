@@ -207,5 +207,5 @@ download_github_archive_data(
     search_queries=model_name,
     start_date=date(StartDate, 1, 1),
     end_date=date(EndDate, 1, 1),
-    output_file="github_repos.csv"
+    output_file=f"github_repos_{StartDate}_{EndDate}.csv"
 )
