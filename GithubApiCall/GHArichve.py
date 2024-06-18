@@ -5,6 +5,101 @@ import csv
 import requests
 from datetime import datetime, date, timedelta
 
+model_name = large_language_models = [
+    "mT5",
+    "CodeGen",
+    "CPM",
+    "CodeGeeX",
+    "Yi-",
+    "Mistral",
+    "Vicuna",
+    "XGen",
+    "Phi",
+    "Qwen",
+    "GPT",
+    "Claude",
+    "PaLM",
+    "Falcon",
+    "Gemini",
+    "Llama",
+    "Cohere Command",
+    "Mixtral",
+    "Stable LM",
+    "ERNIE",
+    "Jamba",
+    "Inflection",
+    "BERT",
+    "Codex",
+    "Gopher",
+    "Turing-NLG",
+    "MT-NLG",
+    "Megatron-Turing NLG",
+    "BLOOM",
+    "T5",
+    "UL",
+    "Jurassic",
+    "Reformer",
+    "CTRL",
+    "XLM-R",
+    "XLNet",
+    "ALBERT",
+    "Electra",
+    "RoBERTa",
+    "DistilBERT",
+    "BioBERT",
+    "ERNIE",
+    "GShard",
+    "Switch Transformer",
+    "LaMDA",
+    "M6",
+    "ProphetNet",
+    "GLM",
+    "PanGu-Alpha",
+    "DialoGPT",
+    "Jukebox",
+    "Turing-Bletchley",
+    "ZeRO-Infinity",
+    "Longformer",
+    "Realformer",
+    "Pegasus",
+    "BigGAN",
+    "DALL-E",
+    "WuDao",
+    "DeepSpeed",
+    "GLIDE",
+    "Retro",
+    "Flamingo",
+    "Gato",
+    "Minerva",
+    "VALL-E",
+    "Cicero",
+    "PALM",
+    "OPT",
+    "SPT",
+    "NLLB",
+    "Sparrow",
+    "AlphaCode",
+    "Switch-Transformers",
+    "ChatGPT",
+    "ZeRO",
+    "Perceiver",
+    "DeepSpeed",
+    "ULMFiT",
+    "Flaubert",
+    "Megatron",
+    "CTRL",
+    "Alpa",
+    "NeMo-Megatron",
+    "PanGu-Alpha",
+    "CogView",
+    "Yuan 1.0",
+    "Yuke 1.0",
+    "ExaGPT",
+    "Aether-GPT",
+    "GPT"
+]
+
+
 def download_github_archive_data(search_queries, start_date, end_date, output_file):
     """
     下载GitHub Archive数据,并将包含指定搜索关键词的仓库信息保存到CSV文件中。
@@ -19,7 +114,8 @@ def download_github_archive_data(search_queries, start_date, end_date, output_fi
     None
     """
     # 定义CSV文件的列名
-    fieldnames = ["Repository Name", "Repository URL", "Description", "Programming Language", "Stars", "Forks", "Created At", "Search Query"]
+    fieldnames = ["Repository Name", "Repository URL", "Description", "Programming Language", "Stars", "Forks",
+                  "Created At", "Search Query"]
 
     # 创建CSV文件并写入数据
     with open(output_file, "w", newline="", encoding="utf-8") as csvfile:
@@ -64,8 +160,10 @@ def download_github_archive_data(search_queries, start_date, end_date, output_fi
                                     repo_url = f"https://github.com/{repo_name}"
                                     if "commits" in event["payload"] and event["payload"]["commits"]:
                                         repo_description = event["payload"]["commits"][0]["message"]
-                                        if "author" in event["payload"]["commits"][0] and "email" in event["payload"]["commits"][0]["author"]:
-                                            repo_language = event["payload"]["commits"][0]["author"]["email"].split("@")[-1]
+                                        if "author" in event["payload"]["commits"][0] and "email" in \
+                                                event["payload"]["commits"][0]["author"]:
+                                            repo_language = \
+                                                event["payload"]["commits"][0]["author"]["email"].split("@")[-1]
                                         else:
                                             repo_language = ""
                                     else:
@@ -73,7 +171,8 @@ def download_github_archive_data(search_queries, start_date, end_date, output_fi
                                         repo_language = ""
                                     repo_stars = event["repo"].get("stargazers_count", 0)
                                     repo_forks = event["repo"].get("forks_count", 0)
-                                    repo_created_at = datetime.strptime(event["created_at"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
+                                    repo_created_at = datetime.strptime(event["created_at"],
+                                                                        "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
 
                                     # 检查是否已经存在该仓库
                                     if (repo_name, search_query) not in unique_repos:
@@ -98,10 +197,11 @@ def download_github_archive_data(search_queries, start_date, end_date, output_fi
 
     print("Data saved to github_repos.csv")
 
+
 # 示例用法
 download_github_archive_data(
-    search_queries=["large language model", "transformer", "gpt"],
-    start_date=date(2016, 1, 1),
+    search_queries=model_name,
+    start_date=date(2020, 1, 1),
     end_date=date(2023, 6, 1),
     output_file="github_repos.csv"
 )

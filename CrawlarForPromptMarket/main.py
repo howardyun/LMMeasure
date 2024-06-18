@@ -1,28 +1,72 @@
-import requests
-from bs4 import BeautifulSoup
+import os
+import csv
+import time
 
-# URL of the website
-url = "https://civitai.com/"
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
-# Send a request to the website
-response = requests.get(url)
+# 设置Chrome选项
+chrome_options = Options()
+chrome_options.add_argument("--headless")  # 无头模式
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--no-sandbox")
 
-# Check if the request was successful
-if response.status_code == 200:
-    # Parse the HTML content
-    soup = BeautifulSoup(response.content, "html.parser")
-    print(soup)
-    # Find all model cards on the main page
-    model_cards = soup.find_all("div", class_="model-card")
+# 初始化WebDriver
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-    # Check if model cards are found
-    if model_cards:
-        for model in model_cards:
-            # Extract title and link
-            title = model.find("h2").text if model.find("h2") else "No title"
-            link = model.find("a", href=True)["href"] if model.find("a", href=True) else "No link"
-            print(f"Title: {title}, Link: {url}{link}")
-    else:
-        print("No model cards found.")
-else:
-    print(f"Failed to retrieve the page. Status code: {response.status_code}")
+# 创建存储目录
+output_dir = 'Data'
+os.makedirs(output_dir, exist_ok=True)
+
+# 初始化存储变量
+url_list = []
+file_counter = 0
+
+
+def save_to_csv(data, counter):
+    filename = os.path.join(output_dir, f'urls_{counter}.csv')
+    with open(filename, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(['URL'])
+        for url in data:
+            writer.writerow([url])
+    print(f'Saved {len(data)} URLs to {filename}')
+
+
+try:
+
+    for i in range(23991):
+        time.sleep(0.5)
+        if i == 0:
+            url = "https://huggingface.co/models?sort=trending"
+        else:
+            url = f"https://huggingface.co/models?p={i}&sort=trending"
+        # 打开目标URL
+        driver.get(url)
+        # 查找目标路径下的所有article元素
+        path = "body > div > main > div > div > section.pt-8.border-gray-100.col-span-full.lg\\:col-span-6.xl\\:col-span-7.pb-12 > div.relative > div"
+        section = driver.find_element(By.CSS_SELECTOR, path)
+        articles = section.find_elements(By.TAG_NAME, 'article')
+
+        # 提取并存储每个article元素的内容
+        for article in articles:
+            url_list.append(article.find_element(By.TAG_NAME, 'a').get_attribute('href'))
+
+        # 每100个URL存为一个文件
+        if i % 99 == 0:
+            print(str(i) + ':' + str(file_counter))
+            save_to_csv(url_list, file_counter)
+            url_list.clear()
+            file_counter += 1
+
+    # 保存剩余的URL
+    if url_list:
+        save_to_csv(url_list, file_counter)
+
+finally:
+    print(i)
+    # 关闭浏览器
+    driver.quit()
