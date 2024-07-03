@@ -37,10 +37,10 @@ def save_to_csv(data, counter):
 
 
 try:
-
-    for i in range(23991):
-        time.sleep(0.5)
-        if i == 0:
+    # 23991
+    for i in range(1300,23991):
+        time.sleep(0.2)
+        if (i+1) == 1:
             url = "https://huggingface.co/models?sort=trending"
         else:
             url = f"https://huggingface.co/models?p={i}&sort=trending"
@@ -56,15 +56,17 @@ try:
             url_list.append(article.find_element(By.TAG_NAME, 'a').get_attribute('href'))
 
         # 每100个URL存为一个文件
-        if i % 99 == 0:
+        if (i+1) % 100 == 0:
             print(str(i) + ':' + str(file_counter))
-            save_to_csv(url_list, file_counter)
+            save_to_csv(url_list, int(i/100))
             url_list.clear()
             file_counter += 1
+            time.sleep(1)
+
 
     # 保存剩余的URL
     if url_list:
-        save_to_csv(url_list, file_counter)
+        save_to_csv(url_list,int(i/100))
 
 finally:
     print(i)

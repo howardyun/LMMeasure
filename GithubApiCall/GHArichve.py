@@ -6,7 +6,7 @@ import requests
 from datetime import datetime, date, timedelta
 
 StartDate = 2023
-EndDate = 2023
+EndDate = 2024
 
 model_name = large_language_models = [
     "diffusion",
@@ -147,7 +147,10 @@ def download_github_archive_data(search_queries, start_date, end_date, output_fi
             with gzip.open(file_name, "rb") as f:
                 print(f"Processing {file_name}...")
                 for line in f:
-                    event = json.loads(line)
+                    try:
+                        event = json.loads(line)
+                    except json.decoder.JSONDecodeError as e:
+                        continue
 
                     # 检查事件类型是否为"PushEvent"
                     if event["type"] == "PushEvent":
@@ -243,6 +246,6 @@ def download_github_archive_data(search_queries, start_date, end_date, output_fi
 download_github_archive_data(
     search_queries=model_name,
     start_date=date(StartDate, 1, 1),
-    end_date=date(EndDate, 1, 1),
+    end_date=date(EndDate, 6, 15),
     output_file="github_repos.csv"
 )
