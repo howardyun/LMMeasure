@@ -158,7 +158,7 @@ cython_debug/
 # 排除数据文件夹
 Data/
 GithubApiCall/HandleData/Data
-
+CrawlarForPromptMarket/Data
 
 
 # PyCharm

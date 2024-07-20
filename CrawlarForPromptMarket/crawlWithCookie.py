@@ -1,6 +1,7 @@
 import os
 import csv
 import time
+import pickle
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -10,7 +11,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # 设置Chrome选项
 chrome_options = Options()
-chrome_options.add_argument("--headless")  # 无头模式
+# chrome_options.add_argument("--headless")  # 无头模式，如果需要可注释掉
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 
@@ -25,6 +26,16 @@ os.makedirs(output_dir, exist_ok=True)
 url_list = []
 file_counter = 0
 
+# 定义存储和加载Cookie的函数
+def save_cookies(driver, path):
+    with open(path, 'wb') as file:
+        pickle.dump(driver.get_cookies(), file)
+
+def load_cookies(driver, path):
+    with open(path, 'rb') as file:
+        cookies = pickle.load(file)
+        for cookie in cookies:
+            driver.add_cookie(cookie)
 
 def save_to_csv(data, counter):
     filename = os.path.join(output_dir, f'urls_{counter}.csv')
@@ -35,10 +46,23 @@ def save_to_csv(data, counter):
             writer.writerow([url])
     print(f'Saved {len(data)} URLs to {filename}')
 
+# 手动登录一次并保存Cookie
+def login_and_save_cookies():
+    driver.get("https://huggingface.co/login")
+    time.sleep(30)  # 给予足够时间手动登录并完成二次验证
+    save_cookies(driver, 'cookies.pkl')
 
 try:
-    # 23991
-    for i in range(1500,23991):
+    # 只在第一次运行时需要手动登录
+    if not os.path.exists('cookies.pkl'):
+        login_and_save_cookies()
+    else:
+        driver.get("https://huggingface.co")
+        load_cookies(driver, 'cookies.pkl')
+        driver.refresh()  # 刷新页面以应用Cookie
+
+    # 开始爬取数据
+    for i in range(1500, 23991):
         time.sleep(0.2)
         if (i+1) == 1:
             url = "https://huggingface.co/models?sort=trending"
@@ -63,10 +87,9 @@ try:
             file_counter += 1
             time.sleep(1)
 
-
     # 保存剩余的URL
     if url_list:
-        save_to_csv(url_list,int(i/100))
+        save_to_csv(url_list, int(i/100))
 
 finally:
     print(i)
