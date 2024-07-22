@@ -1,3 +1,4 @@
+# 本文件被用于通过model market市场的url收集每个网页对应的详细的收集
 import os
 import json
 import csv
@@ -15,7 +16,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Path to the folder containing CSV files
-input_folder_path = 'Datatest/'
+input_folder_path = 'Data/'
 output_folder_path = 'ModelMarketDetailData/'
 error_file_path = 'ModelMarketDetailData/error_urls.csv'
 cookie_file_path = 'cookies.pkl'  # Path to your cookies pkl file
@@ -84,7 +85,7 @@ def add_cookies_to_webdriver(driver, cookies):
 # Function to fetch and process a single URL
 def fetch_and_process_url(url, cookies):
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")  # Run in headless mode
+    chrome_options.add_argument("--headless")  # Run in headless mode
     chrome_options.add_argument("--disable-gpu")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
@@ -94,7 +95,7 @@ def fetch_and_process_url(url, cookies):
         driver.refresh()
 
         # Add a delay after loading the page
-        time.sleep(uniform(2, 5)/10)  # Random delay between 2 to 5 seconds
+        time.sleep(uniform(2, 5) / 10)  # Random delay between 2 to 5 seconds
 
         # Get the page source after loading
         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -112,7 +113,7 @@ def fetch_and_process_url(url, cookies):
         driver.quit()
 
         # Add a delay after closing the WebDriver
-        time.sleep(uniform(1, 3)/10)  # Random delay between 1 to 3 seconds
+        time.sleep(uniform(1, 3) / 10)  # Random delay between 1 to 3 seconds
 
 
 # List to store error URLs

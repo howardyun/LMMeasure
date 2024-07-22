@@ -160,6 +160,8 @@ Data/
 GithubApiCall/HandleData/Data
 CrawlarForPromptMarket/Data
 CrawlarForPromptMarket/ModelMarketDetailData
+CrawlarForPromptMarket/cookies.pkl
+CrawlarForPromptMarket/Datatest
 
 
 # PyCharm
