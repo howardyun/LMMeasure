@@ -2,6 +2,8 @@
 import os
 import json
 import csv
+import re
+
 import pandas as pd
 import pickle
 import time
@@ -114,7 +116,8 @@ def fetch_and_process_url(url, cookies):
 
         # Add a delay after closing the WebDriver
         time.sleep(uniform(1, 3) / 10)  # Random delay between 1 to 3 seconds
-
+def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
+    return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]
 
 # List to store error URLs
 error_urls = []
@@ -122,9 +125,12 @@ error_urls = []
 # Load cookies from the pkl file
 cookies = load_cookies_from_pkl(cookie_file_path)
 
+file_names = sorted(os.listdir(input_folder_path), key=natural_sort_key)
+
 # Iterate through all CSV files in the folder
-for file_name in os.listdir(input_folder_path):
+for file_name in file_names:
     if file_name.endswith('.csv'):
+        print(file_name)
         csv_file_path = os.path.join(input_folder_path, file_name)
         # Read URLs from the CSV file
         urls = read_urls_from_csv(csv_file_path)
@@ -132,7 +138,7 @@ for file_name in os.listdir(input_folder_path):
         file_content = {}
 
         # Use ThreadPoolExecutor to process URLs in parallel
-        with ThreadPoolExecutor(max_workers=10) as executor:
+        with ThreadPoolExecutor(max_workers=5) as executor:
             futures = [executor.submit(fetch_and_process_url, url, cookies) for url in urls]
             for future in as_completed(futures):
                 url, content = future.result()
