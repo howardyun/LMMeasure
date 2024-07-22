@@ -159,6 +159,7 @@ cython_debug/
 Data/
 GithubApiCall/HandleData/Data
 CrawlarForPromptMarket/Data
+CrawlarForPromptMarket/ModelMarketDetailData
 
 
 # PyCharm

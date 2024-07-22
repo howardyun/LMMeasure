@@ -11,7 +11,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # 设置Chrome选项
 chrome_options = Options()
-# chrome_options.add_argument("--headless")  # 无头模式，如果需要可注释掉
+chrome_options.add_argument("--headless")  # 无头模式，如果需要可注释掉
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 
@@ -62,7 +62,7 @@ try:
         driver.refresh()  # 刷新页面以应用Cookie
 
     # 开始爬取数据
-    for i in range(1500, 23991):
+    for i in range(8300, 15000):
         time.sleep(0.2)
         if (i+1) == 1:
             url = "https://huggingface.co/models?sort=trending"
