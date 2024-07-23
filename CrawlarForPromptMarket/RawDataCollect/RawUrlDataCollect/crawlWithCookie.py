@@ -19,17 +19,19 @@ chrome_options.add_argument("--no-sandbox")
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
 # 创建存储目录
-output_dir = 'Data'
+output_dir = '../RawData/ModelMarketRawUrlData'
 os.makedirs(output_dir, exist_ok=True)
 
 # 初始化存储变量
 url_list = []
 file_counter = 0
 
+
 # 定义存储和加载Cookie的函数
 def save_cookies(driver, path):
     with open(path, 'wb') as file:
         pickle.dump(driver.get_cookies(), file)
+
 
 def load_cookies(driver, path):
     with open(path, 'rb') as file:
@@ -37,20 +39,23 @@ def load_cookies(driver, path):
         for cookie in cookies:
             driver.add_cookie(cookie)
 
+
 def save_to_csv(data, counter):
     filename = os.path.join(output_dir, f'urls_{counter}.csv')
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        writer.writerow(['URL'])
-        for url in data:
-            writer.writerow([url])
+        writer.writerow(['URL', 'model_type', 'download_num', 'like_num'])
+        for url, model_type, download_num, like_num in data:
+            writer.writerow([url, model_type, download_num, like_num])
     print(f'Saved {len(data)} URLs to {filename}')
+
 
 # 手动登录一次并保存Cookie
 def login_and_save_cookies():
     driver.get("https://huggingface.co/login")
     time.sleep(30)  # 给予足够时间手动登录并完成二次验证
     save_cookies(driver, 'cookies.pkl')
+
 
 try:
     # 只在第一次运行时需要手动登录
@@ -62,9 +67,9 @@ try:
         driver.refresh()  # 刷新页面以应用Cookie
 
     # 开始爬取数据
-    for i in range(8300, 15000):
-        time.sleep(0.2)
-        if (i+1) == 1:
+    for i in range(0, 8000):
+        # time.sleep(0.2)
+        if (i + 1) == 1:
             url = "https://huggingface.co/models?sort=trending"
         else:
             url = f"https://huggingface.co/models?p={i}&sort=trending"
@@ -77,19 +82,68 @@ try:
 
         # 提取并存储每个article元素的内容
         for article in articles:
-            url_list.append(article.find_element(By.TAG_NAME, 'a').get_attribute('href'))
+            model_type = ''
+            download_num = ''
+            like_num = ''
+            try:
+                divs = article.find_elements(By.TAG_NAME, 'div')
+                if len(divs) > 0:
+                    texts = divs[0].text
+                    text = texts.replace("'", "").split('\n')
+                    if len(text) == 4:
+                        if 'Updated' in text[3]:
+                            model_type = text[1]
+                            download_num = 'null'
+                            like_num = 'null'
+                        else:
+                            # 获取index3&5
+                            model_type = 'null'
+                            download_num = 'null'
+                            like_num = text[3]
+                    elif len(text) == 6:
+                        # 获取index3&5
+                        if 'Updated' in text[3]:
+                            model_type = text[1]
+                            download_num = 'null'
+                            like_num = text[5]
+                        else:
+                            model_type = 'null'
+                            download_num = text[3]
+                            like_num = text[5]
+                    elif len(text) == 8:
+                        # 获取索引1&5&7
+                        model_type = text[1]
+                        download_num = text[5]
+                        like_num = text[7]
+                    elif len(text) == 9:
+                        # 获取索引1&5&8
+                        model_type = text[1]
+                        download_num = text[5]
+                        like_num = text[8]
+                    else:
+                        model_type = 'null'
+                        download_num = 'null'
+                        like_num = 'null'
+                else:
+                    model_type = 'null'
+                    download_num = 'null'
+                    like_num = 'null'
+            except Exception as e:
+                text = f"Error: {e}"
+            url_list.append(
+                [article.find_element(By.TAG_NAME, 'a').get_attribute('href'), model_type, download_num, like_num])
 
         # 每100个URL存为一个文件
-        if (i+1) % 100 == 0:
+        if (i + 1) % 100 == 0:
             print(str(i) + ':' + str(file_counter))
-            save_to_csv(url_list, int(i/100))
+            save_to_csv(url_list, int(i / 100))
             url_list.clear()
             file_counter += 1
             time.sleep(1)
 
     # 保存剩余的URL
     if url_list:
-        save_to_csv(url_list, int(i/100))
+        save_to_csv(url_list, 'last')
 
 finally:
     print(i)

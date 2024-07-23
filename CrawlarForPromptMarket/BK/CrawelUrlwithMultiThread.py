@@ -16,7 +16,7 @@ chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 
 # 创建存储目录
-output_dir = 'Data'
+output_dir = '../Data'
 os.makedirs(output_dir, exist_ok=True)
 
 # 初始化存储变量
@@ -47,7 +47,7 @@ def save_to_csv(data, counter):
 def login_and_save_cookies():
     driver.get("https://huggingface.co/login")
     time.sleep(30)  # 给予足够时间手动登录并完成二次验证
-    save_cookies(driver, 'cookies.pkl')
+    save_cookies(driver, '../RawDataCollect/RawUrlDataCollect/cookies.pkl')
 
 def fetch_urls(page_number):
     chrome_options = Options()
@@ -59,7 +59,7 @@ def fetch_urls(page_number):
     try:
         # 加载Cookies并刷新页面
         driver.get("https://huggingface.co")
-        load_cookies(driver, 'cookies.pkl')
+        load_cookies(driver, '../RawDataCollect/RawUrlDataCollect/cookies.pkl')
         driver.refresh()  # 刷新页面以应用Cookie
 
         if page_number == 0:
@@ -85,7 +85,7 @@ def fetch_urls(page_number):
 
 try:
     # 只在第一次运行时需要手动登录
-    if not os.path.exists('cookies.pkl'):
+    if not os.path.exists('../RawDataCollect/RawUrlDataCollect/cookies.pkl'):
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         login_and_save_cookies()
         driver.quit()

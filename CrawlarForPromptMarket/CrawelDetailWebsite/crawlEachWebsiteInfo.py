@@ -18,10 +18,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Path to the folder containing CSV files
-input_folder_path = 'Data/'
-output_folder_path = 'ModelMarketDetailData/'
+input_folder_path = '../Data/'
+output_folder_path = '../ModelMarketDetailData/'
 error_file_path = 'ModelMarketDetailData/error_urls.csv'
-cookie_file_path = 'cookies.pkl'  # Path to your cookies pkl file
+cookie_file_path = '../RawDataCollect/RawUrlDataCollect/cookies.pkl'  # Path to your cookies pkl file
 
 
 # Function to read URLs from a CSV file
@@ -138,7 +138,7 @@ for file_name in file_names:
         file_content = {}
 
         # Use ThreadPoolExecutor to process URLs in parallel
-        with ThreadPoolExecutor(max_workers=5) as executor:
+        with ThreadPoolExecutor(max_workers=10) as executor:
             futures = [executor.submit(fetch_and_process_url, url, cookies) for url in urls]
             for future in as_completed(futures):
                 url, content = future.result()
