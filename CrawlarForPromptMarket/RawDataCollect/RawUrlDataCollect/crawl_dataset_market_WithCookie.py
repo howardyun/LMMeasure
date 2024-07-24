@@ -67,7 +67,7 @@ try:
         driver.refresh()  # 刷新页面以应用Cookie
 
     # 开始爬取数据
-    for i in range(0, 8000):
+    for i in range(12000, 15000):
         # time.sleep(0.2)
         if (i + 1) == 1:
             url = "https://huggingface.co/models?sort=trending"
