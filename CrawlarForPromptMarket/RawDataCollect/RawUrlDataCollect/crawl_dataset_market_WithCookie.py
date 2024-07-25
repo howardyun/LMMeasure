@@ -19,7 +19,7 @@ chrome_options.add_argument("--no-sandbox")
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
 # 创建存储目录
-output_dir = '../RawData/ModelMarketRawUrlData'
+output_dir = '../RawData/DataSetMarketRawUrlData'
 os.makedirs(output_dir, exist_ok=True)
 
 # 初始化存储变量
@@ -44,9 +44,9 @@ def save_to_csv(data, counter):
     filename = os.path.join(output_dir, f'urls_{counter}.csv')
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        writer.writerow(['URL', 'model_type', 'download_num', 'like_num'])
-        for url, model_type, download_num, like_num in data:
-            writer.writerow([url, model_type, download_num, like_num])
+        writer.writerow(['URL', ' dataset_type', 'dataset_volume', 'download_num', 'like_num'])
+        for url, dataset_type, dataset_volume, download_num, like_num in data:
+            writer.writerow([url, dataset_type, dataset_volume, download_num, like_num])
     print(f'Saved {len(data)} URLs to {filename}')
 
 
@@ -67,12 +67,13 @@ try:
         driver.refresh()  # 刷新页面以应用Cookie
 
     # 开始爬取数据
-    for i in range(12000, 15000):
+    # 6095
+    for i in range(5300, 6095):
         # time.sleep(0.2)
         if (i + 1) == 1:
-            url = "https://huggingface.co/models?sort=trending"
+            url = "https://huggingface.co/datasets?sort=trending"
         else:
-            url = f"https://huggingface.co/models?p={i}&sort=trending"
+            url = f"https://huggingface.co/datasets?p={i}&sort=trending"
         # 打开目标URL
         driver.get(url)
         # 查找目标路径下的所有article元素
@@ -82,7 +83,8 @@ try:
 
         # 提取并存储每个article元素的内容
         for article in articles:
-            model_type = ''
+            dataset_type = ''
+            dataset_volume = ''
             download_num = ''
             like_num = ''
             try:
@@ -91,47 +93,58 @@ try:
                     texts = divs[0].text
                     text = texts.replace("'", "").split('\n')
                     if len(text) == 4:
-                        if 'Updated' in text[3]:
-                            model_type = text[1]
-                            download_num = 'null'
-                            like_num = 'null'
-                        else:
-                            # 获取index3&5
-                            model_type = 'null'
-                            download_num = 'null'
-                            like_num = text[3]
+                        # if 'Updated' in text[3]:
+                        #     model_type = text[1]
+                        #     download_num = 'null'
+                        #     like_num = 'null'
+                        # else:
+                        #     # 获取index3&5
+                        #     model_type = 'null'
+                        #     download_num = 'null'
+                        #     like_num = text[3]
+                        dataset_type = 'null'
+                        dataset_volume = 'null'
+                        download_num = 'null'
+                        like_num = text[3]
                     elif len(text) == 6:
                         # 获取index3&5
                         if 'Updated' in text[3]:
-                            model_type = text[1]
+                            dataset_type = 'null'
+                            dataset_volume = text[5]
                             download_num = 'null'
-                            like_num = text[5]
+                            like_num = 'null'
                         else:
-                            model_type = 'null'
+                            dataset_type = 'null'
+                            dataset_volume = 'null'
                             download_num = text[3]
                             like_num = text[5]
                     elif len(text) == 8:
                         # 获取索引1&5&7
-                        model_type = text[1]
+                        dataset_type = text[1]
+                        dataset_volume = 'null'
                         download_num = text[5]
                         like_num = text[7]
-                    elif len(text) == 9:
+                    elif len(text) == 10:
                         # 获取索引1&5&8
-                        model_type = text[1]
-                        download_num = text[5]
-                        like_num = text[8]
+                        dataset_type = text[1]
+                        dataset_volume = text[5]
+                        download_num = text[7]
+                        like_num = text[9]
                     else:
-                        model_type = 'null'
+                        dataset_type = 'null'
+                        dataset_volume = 'null'
                         download_num = 'null'
                         like_num = 'null'
                 else:
                     model_type = 'null'
                     download_num = 'null'
                     like_num = 'null'
+
             except Exception as e:
                 text = f"Error: {e}"
             url_list.append(
-                [article.find_element(By.TAG_NAME, 'a').get_attribute('href'), model_type, download_num, like_num])
+                [article.find_element(By.TAG_NAME, 'a').get_attribute('href'), dataset_type, dataset_volume,
+                 download_num, like_num])
 
         # 每100个URL存为一个文件
         if (i + 1) % 100 == 0:

@@ -67,12 +67,12 @@ try:
         driver.refresh()  # 刷新页面以应用Cookie
 
     # 开始爬取数据
-    for i in range(12000, 15000):
+    for i in range(0, 6095):
         # time.sleep(0.2)
         if (i + 1) == 1:
-            url = "https://huggingface.co/models?sort=trending"
+            url = "https://huggingface.co/model?sort=trending"
         else:
-            url = f"https://huggingface.co/models?p={i}&sort=trending"
+            url = f"https://huggingface.co/model?p={i}&sort=trending"
         # 打开目标URL
         driver.get(url)
         # 查找目标路径下的所有article元素
