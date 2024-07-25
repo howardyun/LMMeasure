@@ -68,4 +68,3 @@ input_folder_path = '../Data/'
 output_folder_path = '../SplitData/'
 # error_file_path = 'ModelMarketDetailData/error_urls.csv'
 process_and_split_raw_concat_urls(read_and_concat_csvs(input_folder_path), output_folder_path)
-
