@@ -104,7 +104,7 @@ if __name__ == "__main__":
         sonar_token = "your_sonar_token"
 
         main(repo_urls, base_dir, sonar_host, sonar_token, failed_repos)
-
+        print("")
     # 保存失败的仓库信息到CSV文件
     if failed_repos:
         failed_repos_df = pd.DataFrame(failed_repos)
