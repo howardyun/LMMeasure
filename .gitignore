@@ -165,7 +165,7 @@ CrawlarForPromptMarket/Datatest
 CrawlarForPromptMarket/RawDataCollect/RawData
 CrawlarForPromptMarket/BK/SplitData
 CrawlarForPromptMarket/DataAnalysisScript/RawData
-
+CrawlarForPromptMarket/CrwalFromSpace/RepoData
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
@@ -174,3 +174,4 @@ CrawlarForPromptMarket/DataAnalysisScript/RawData
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
+/CrawlarForPromptMarket/CrwalFromSpace/cookies.pkl
