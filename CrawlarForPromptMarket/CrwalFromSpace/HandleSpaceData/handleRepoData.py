@@ -17,10 +17,13 @@ def clone_repo(repo_url, clone_dir):
     """
     克隆Git仓库到指定目录
     """
-    if not os.path.exists(clone_dir):
-        os.makedirs(clone_dir)
+    if os.path.exists(clone_dir):
+        print(f"Directory {clone_dir} already exists. Skipping clone.")
+        return
+    os.makedirs(clone_dir, exist_ok=True)
     Repo.clone_from(repo_url, clone_dir)
     # print(f"Cloned {repo_url} into {clone_dir}")
+
 
 
 def scan_code_with_bandit(code_dir, report_file):
@@ -77,7 +80,7 @@ if __name__ == "__main__":
         print(f"Processing file number {i}")
         repo_urls = pd.read_csv(f'../RepoData/urls_{i}.csv')['URL'].to_list()
 
-        base_dir = "./cloned_repos"
+        base_dir = "/Users/howardyun/Desktop/workspace/cloned_repos"
 
         # 替换为你的SonarQube服务器配置
         sonar_host = "http://localhost:9000"
