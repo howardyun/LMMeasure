@@ -158,12 +158,12 @@ cython_debug/
 # 排除数据文件夹
 Data/
 GithubApiCall/HandleData/Data
-CrawlarForPromptMarket/Data
+CrawlarForPromptMarket/BK/Data
 CrawlarForPromptMarket/ModelMarketDetailData
 CrawlarForPromptMarket/RawDataCollect/RawUrlDataCollect/cookies.pkl
 CrawlarForPromptMarket/Datatest
 CrawlarForPromptMarket/RawDataCollect/RawData
-CrawlarForPromptMarket/SplitData
+CrawlarForPromptMarket/BK/SplitData
 CrawlarForPromptMarket/DataAnalysisScript/RawData
 
 

@@ -18,7 +18,7 @@ chrome_options.add_argument("--no-sandbox")
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
 # 创建存储目录
-output_dir = '../Data'
+output_dir = 'Data'
 os.makedirs(output_dir, exist_ok=True)
 
 # 初始化存储变量

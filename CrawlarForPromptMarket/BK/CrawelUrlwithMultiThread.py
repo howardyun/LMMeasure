@@ -16,7 +16,7 @@ chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 
 # 创建存储目录
-output_dir = '../Data'
+output_dir = 'Data'
 os.makedirs(output_dir, exist_ok=True)
 
 # 初始化存储变量

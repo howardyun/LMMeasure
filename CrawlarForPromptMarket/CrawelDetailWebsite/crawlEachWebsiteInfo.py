@@ -18,7 +18,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Path to the folder containing CSV files
-input_folder_path = '../Data/'
+input_folder_path = '../BK/Data/'
 output_folder_path = '../ModelMarketDetailData/'
 error_file_path = 'ModelMarketDetailData/error_urls.csv'
 cookie_file_path = '../RawDataCollect/RawUrlDataCollect/cookies.pkl'  # Path to your cookies pkl file
