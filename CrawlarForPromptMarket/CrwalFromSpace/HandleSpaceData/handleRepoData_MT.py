@@ -19,7 +19,7 @@ def clone_repo(repo_url, clone_dir, failed_repos):
     克隆Git仓库到指定目录
     """
     if os.path.exists(clone_dir):
-        # print(f"Directory {clone_dir} already exists. Skipping clone.")
+        print(f"Directory {clone_dir} already exists. Skipping clone.")
         return
     os.makedirs(clone_dir, exist_ok=True)
     try:
