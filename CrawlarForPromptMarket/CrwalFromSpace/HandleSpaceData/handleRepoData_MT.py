@@ -93,7 +93,7 @@ def main(repo_urls, base_dir, sonar_host, sonar_token, failed_repos):
 if __name__ == "__main__":
     # 替换为你的Git仓库链接
     failed_repos = []
-    for i in range(0, 3):
+    for i in range(0, 4):
         print(f"Processing file number {i}")
         repo_urls = pd.read_csv(f'../RepoData/urls_{i}.csv')['URL'].to_list()
 
