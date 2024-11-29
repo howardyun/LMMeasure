@@ -38,9 +38,6 @@ def convert_to_json(data):
         return str(data)
 
 
-
-
-
 def connect_to_db():
     return MySQLdb.connect(
         host="localhost",        # MySQL 服务器地址
