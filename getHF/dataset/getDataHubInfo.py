@@ -4,6 +4,7 @@ import pymysql
 pymysql.install_as_MySQLdb()
 import MySQLdb
 import json
+from huggingface_hub import hf_hub_url
 
 
 
@@ -157,12 +158,21 @@ print(dataset.id)
 
 files = api.list_repo_files('Qwen/QwQ-32B-Preview')
 
+# 仓库名称
+repo_name = "Qwen/QwQ-32B-Preview"
+
+# 获取仓库下所有文件的信息
+files = api.list_repo_files(repo_name)
+
+# 打印每个文件的元数据
 for file in files:
-
-    api.get_hf_file_metadata()
-    print(file)
-
-print('end')
+    file_url = hf_hub_url(repo_id=repo_name, filename=file)
+    print(file_url)
+    # 获取每个文件的元数据
+    metadata = api.get_hf_file_metadata(url=file_url)
+    # 打印文件和对应的元数据
+    print(f"File: {file}")
+    print(f"Metadata: {metadata}")
 
 print(dataset)
 
