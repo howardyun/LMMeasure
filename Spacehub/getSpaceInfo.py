@@ -3,9 +3,7 @@ from huggingface_hub import HfApi, EvalResult
 import mysql.connector
 import pymysql
 pymysql.install_as_MySQLdb()
-import MySQLdb
-import json
-import pymysql
+
 import json
 from huggingface_hub import HfApi
 
@@ -57,8 +55,14 @@ count = 0
 
 # 遍历 spaces 数据并插入到数据库中
 for space in spaces:
+    count = count + 1
+    if count <210000 :
+        print(count)
+        continue
+
     try:
         # 提取字段信息
+        space = api.space_info(space.id)
         id = space.id
         author = space.author
         sha = getattr(space, "sha", None)
@@ -84,17 +88,17 @@ for space in spaces:
             host, subdomain, likes, tags, siblings, card_data, runtime, sdk,
             models, datasets, trending_score
         ))
-        db.commit()
-        count += 1
+
         if count % 100 == 0:
-            print(count)
+            print(str(count)+'commit')
+            db.commit()
 
     except Exception as e:
         print(f"Error inserting space {id}: {e}")
 
 
 # 提交事务并关闭连接
-
+db.commit()
 cursor.close()
 db.close()
 
