@@ -7,6 +7,11 @@ pymysql.install_as_MySQLdb()
 import json
 from huggingface_hub import HfApi
 
+
+token_prefix = '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'
+
+
+
 # 初始化 Hugging Face API
 api = HfApi()
 
