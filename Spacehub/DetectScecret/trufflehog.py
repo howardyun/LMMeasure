@@ -1,6 +1,6 @@
 import subprocess
 import shutil
-shutil.rmtree(path)
+# shutil.rmtree(path)
 
 
 def scan_git_repo(repo_path_or_url):

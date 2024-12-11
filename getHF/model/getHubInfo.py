@@ -5,9 +5,6 @@ pymysql.install_as_MySQLdb()
 import MySQLdb
 import json
 
-
-
-
 def check_for_dict(values):
     has_dict = False  # 标志是否存在 dict
     for i, value in enumerate(values):
