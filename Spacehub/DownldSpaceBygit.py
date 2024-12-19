@@ -8,7 +8,7 @@ os.environ['GIT_LFS_SKIP_SMUDGE'] = "1"
 my_env = os.environ.copy()
 
 try:
-    conn = pymysql.connect(user="root", password="123456", host="192.168.196.11",
+    conn = pymysql.connect(user="root", password="123456", host="127.0.0.1",
                            port=3306, database="my_huggingface_data")
 except:
     exit(0)
@@ -49,11 +49,16 @@ def fetch_ids_paginated(table_name, page_size, page_number):
     finally:
         cursor.close()
 
+# 270- 400
+# 401- 600
+
 table_name = 'spaceinfo'  # 替换为你的表名
 page_size = 100  # 每页 10 条记录
-page_number = 1  # 从第 1页 开始
+page_number = 601  # 从第 1页 开始
 
 while True:
+    if page_number == 801:
+        break
     ids = fetch_ids_paginated(table_name, page_size, page_number)
     if not ids:  # 如果没有更多数据，终止
         break
@@ -61,7 +66,7 @@ while True:
         id=''.join(id)
         print(id)
         subprocess.run(["git", "clone", "https://huggingface.co/spaces/" + id,
-                        "//NX/nx_共享文件/our_space_data/" + id.replace("/", "_")],
+                        "D:/共享文件/our_space_data_600_800/" + id.replace("/", "_")],
                        env=my_env, shell=True,)
     print(f"page{page_number},finish")
     page_number += 1
