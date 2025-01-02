@@ -13,4 +13,4 @@ def scan_file(file_path):
         print(f"Error scanning file: {e}")
 
 # 使用方法
-scan_file('../bk/app.py')
+scan_file('../../bk/app.py')

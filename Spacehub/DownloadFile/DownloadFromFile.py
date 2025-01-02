@@ -100,8 +100,8 @@ def download_parallel(download_dir, modelhub_list):
 # 示例用法
 if __name__ == "__main__":
     OUTPUT_DIR = "monthly_spaceId_files"  # 存储模型文件的目录
-    START_MONTH = "2024-08"  # 起始月份，例如 "2024-01"
-    END_MONTH = "2024-12"  # 结束月份，例如 "2024-06"
+    START_MONTH = "2024-05"  # 起始月份，例如 "2024-01"
+    END_MONTH = "2024-07"  # 结束月份，例如 "2024-06"
 
     models_by_month = read_monthly_models(OUTPUT_DIR, start_month=START_MONTH, end_month=END_MONTH)
 
