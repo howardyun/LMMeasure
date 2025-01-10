@@ -157,15 +157,15 @@ cython_debug/
 
 # 排除数据文件夹
 Data/
-GithubApiCall/HandleData/Data
-CrawlarForPromptMarket/BK/Data
-CrawlarForPromptMarket/ModelMarketDetailData
-CrawlarForPromptMarket/RawDataCollect/RawUrlDataCollect/cookies.pkl
-CrawlarForPromptMarket/Datatest
-CrawlarForPromptMarket/RawDataCollect/RawData
-CrawlarForPromptMarket/BK/SplitData
-CrawlarForPromptMarket/DataAnalysisScript/RawData
-CrawlarForPromptMarket/CrwalFromSpace/RepoData
+Test/GithubApiCall/HandleData/Data
+Crawl/CrawlarForPromptMarket/BK/Data
+Crawl/CrawlarForPromptMarket/ModelMarketDetailData
+Crawl/CrawlarForPromptMarket/RawDataCollect/RawUrlDataCollect/cookies.pkl
+Crawl/CrawlarForPromptMarket/Datatest
+Crawl/CrawlarForPromptMarket/RawDataCollect/RawData
+Crawl/CrawlarForPromptMarket/BK/SplitData
+Crawl/CrawlarForPromptMarket/DataAnalysisScript/RawData
+Crawl/CrawlarForPromptMarket/CrwalFromSpace/RepoData
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
@@ -174,5 +174,5 @@ CrawlarForPromptMarket/CrwalFromSpace/RepoData
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-/CrawlarForPromptMarket/CrwalFromSpace/cookies.pkl
-/CrawlarForPromptMarket/CrwalFromSpace/HandleSpaceData/cloned_repos/
+/Crawl/CrawlarForPromptMarket/CrwalFromSpace/cookies.pkl
+/Crawl/CrawlarForPromptMarket/CrwalFromSpace/HandleSpaceData/cloned_repos/
