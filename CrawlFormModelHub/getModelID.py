@@ -76,7 +76,7 @@ def main(api_token, output_dir, start_date, end_date):
 def run():
     API_TOKEN = "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"
     OUTPUT_DIR = "monthly_model_files"
-    START_DATE = datetime(2024, 1, 1, tzinfo=timezone.utc)
+    START_DATE = datetime(2024, 10, 1, tzinfo=timezone.utc)
     END_DATE = datetime(2024, 12, 31, tzinfo=timezone.utc)
 
     main(API_TOKEN, OUTPUT_DIR, START_DATE, END_DATE)

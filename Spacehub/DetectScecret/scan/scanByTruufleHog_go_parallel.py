@@ -166,7 +166,7 @@ if __name__ == "__main__":
     os.makedirs(trufflehog_output_dir, exist_ok=True)  # 如果目录不存在，则创建
 
     # 示例：并行扫描一个新添加的文件夹（例如 "E:/download_space/2024-12"）
-    for i in range(3,12):
+    for i in range(12,13):
         new_folder_path = ''
         if i <10:
             new_folder_path = "E:/download_space/2024-0"+str(i)
