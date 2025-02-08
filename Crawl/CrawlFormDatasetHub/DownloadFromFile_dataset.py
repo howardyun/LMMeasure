@@ -7,8 +7,8 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
-os.environ['http_proxy'] = 'http://127.0.0.1:7890'
-os.environ['https_proxy'] = 'http://127.0.0.1:7890'
+# os.environ['http_proxy'] = 'http://127.0.0.1:7890'
+# os.environ['https_proxy'] = 'http://127.0.0.1:7890'
 os.environ['GIT_LFS_SKIP_SMUDGE'] = "1"
 my_env = os.environ.copy()
 
@@ -57,7 +57,10 @@ def download(download_dir,datasethub_list):
         print(f"下载目录已存在: {download_dir}")
 
     for id in datasethub_list:
-        subprocess.run(["git", "clone", "https://huggingface.co/datasets/" + id,
+        # subprocess.run(["git", "clone", "https://huggingface.co/datasets/" + id,
+        #             f"{download_dir}/" + id.replace("/", "_")],
+        #            env=my_env, shell=True, )
+        subprocess.run(["git", "clone", "https://hf-mirror.com/datasets/" + id,
                     f"{download_dir}/" + id.replace("/", "_")],
                    env=my_env, shell=True, )
 
@@ -74,7 +77,9 @@ def download_parallel(download_dir, datasethub_list):
 
     def clone_repo(dataset_id):
         """克隆单个仓库的逻辑。"""
-        repo_url = f"https://huggingface.co/datasets/{dataset_id}"
+        # repo_url = f"https://huggingface.co/datasets/{dataset_id}"
+        repo_url = f"https://hf-mirror.com/datasets/{dataset_id}"
+
         target_dir = os.path.join(download_dir, dataset_id.replace("/", "_"))
         try:
             subprocess.run(["git", "clone", repo_url, target_dir], check=True, shell=True)
@@ -100,8 +105,8 @@ def download_parallel(download_dir, datasethub_list):
 # 示例用法
 if __name__ == "__main__":
     OUTPUT_DIR = "monthly_dataset_files"  # 存储模型文件的目录
-    START_MONTH = "2022-03"  # 起始月份，例如 "2024-01"
-    END_MONTH = "2022-04"  # 结束月份，例如 "2024-06"
+    START_MONTH = "2022-11"  # 起始月份，例如 "2024-01"
+    END_MONTH = "2022-12"  # 结束月份，例如 "2024-06"
 
     datasets_by_month = read_monthly_datasets(OUTPUT_DIR, start_month=START_MONTH, end_month=END_MONTH)
 
