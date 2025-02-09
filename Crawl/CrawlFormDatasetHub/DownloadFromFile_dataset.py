@@ -13,6 +13,10 @@ os.environ['GIT_LFS_SKIP_SMUDGE'] = "1"
 my_env = os.environ.copy()
 
 
+git_username = 'YunSX'
+git_passward = ''
+ACCESS_TOKEN = ""
+
 def read_monthly_datasets(output_dir, start_month=None, end_month=None):
     """读取存储目录中的每个 JSON 文件及其内容，并根据月份范围筛选。"""
     monthly_datasets = {}
@@ -78,7 +82,7 @@ def download_parallel(download_dir, datasethub_list):
     def clone_repo(dataset_id):
         """克隆单个仓库的逻辑。"""
         # repo_url = f"https://huggingface.co/datasets/{dataset_id}"
-        repo_url = f"https://hf-mirror.com/datasets/{dataset_id}"
+        repo_url = f"https://{git_username}:{ACCESS_TOKEN}@hf-mirror.com/datasets/{dataset_id}"
 
         target_dir = os.path.join(download_dir, dataset_id.replace("/", "_"))
         try:
@@ -105,12 +109,12 @@ def download_parallel(download_dir, datasethub_list):
 # 示例用法
 if __name__ == "__main__":
     OUTPUT_DIR = "monthly_dataset_files"  # 存储模型文件的目录
-    START_MONTH = "2022-11"  # 起始月份，例如 "2024-01"
-    END_MONTH = "2022-12"  # 结束月份，例如 "2024-06"
+    START_MONTH = "2024-12"  # 起始月份，例如 "2024-01"
+    END_MONTH = "2024-12"  # 结束月份，例如 "2024-06"
 
     datasets_by_month = read_monthly_datasets(OUTPUT_DIR, start_month=START_MONTH, end_month=END_MONTH)
 
     # 打印读取的模型数据
     for month, datasets in datasets_by_month.items():
         print(f"月份: {month}, 模型数量: {len(datasets)}")
-        download_parallel('E:/download_dataset/'+month,datasets)
+        download_parallel('F:/download_dataset/'+month,datasets)

@@ -6,11 +6,15 @@ import os
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-os.environ['http_proxy'] = 'http://127.0.0.1:7890'
-os.environ['https_proxy'] = 'http://127.0.0.1:7890'
+# os.environ['http_proxy'] = 'http://127.0.0.1:7890'
+# os.environ['https_proxy'] = 'http://127.0.0.1:7890'
+
 os.environ['GIT_LFS_SKIP_SMUDGE'] = "1"
 my_env = os.environ.copy()
 
+git_username = 'YunSX'
+git_passward = ''
+ACCESS_TOKEN = ""
 
 def read_monthly_models(output_dir, start_month=None, end_month=None):
     """读取存储目录中的每个 JSON 文件及其内容，并根据月份范围筛选。"""
@@ -71,7 +75,7 @@ def download_parallel(download_dir, modelhub_list):
 
     def clone_repo(model_id):
         """克隆单个仓库的逻辑。"""
-        repo_url = f"https://huggingface.co/{model_id}"
+        repo_url = f"https://{git_username}:{ACCESS_TOKEN}@hf-mirror.com/{model_id}"
         target_dir = os.path.join(download_dir, model_id.replace("/", "_"))
         try:
             subprocess.run(["git", "clone", repo_url, target_dir], check=True, shell=True)
@@ -96,12 +100,12 @@ def download_parallel(download_dir, modelhub_list):
 # 示例用法
 if __name__ == "__main__":
     OUTPUT_DIR = "monthly_model_files"  # 存储模型文件的目录
-    START_MONTH = "2024-01"  # 起始月份，例如 "2024-01"
-    END_MONTH = "2024-06"  # 结束月份，例如 "2024-06"
+    START_MONTH = "2022-03"  # 起始月份，例如 "2024-01"
+    END_MONTH = "2022-12"  # 结束月份，例如 "2024-06"
 
     models_by_month = read_monthly_models(OUTPUT_DIR, start_month=START_MONTH, end_month=END_MONTH)
 
     # 打印读取的模型数据
     for month, models in models_by_month.items():
         print(f"月份: {month}, 模型数量: {len(models)}")
-        download('download_model/'+month,models)
+        download_parallel('F:download_model/'+month,models)
