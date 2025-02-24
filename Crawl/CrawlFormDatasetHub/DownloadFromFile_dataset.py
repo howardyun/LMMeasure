@@ -14,8 +14,8 @@ my_env = os.environ.copy()
 
 
 git_username = 'YunSX'
-git_passward = ''
-ACCESS_TOKEN = ""
+git_passward = 'Newstage2009'
+ACCESS_TOKEN = "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"
 
 def read_monthly_datasets(output_dir, start_month=None, end_month=None):
     """读取存储目录中的每个 JSON 文件及其内容，并根据月份范围筛选。"""
@@ -109,12 +109,12 @@ def download_parallel(download_dir, datasethub_list):
 # 示例用法
 if __name__ == "__main__":
     OUTPUT_DIR = "monthly_dataset_files"  # 存储模型文件的目录
-    START_MONTH = "2024-12"  # 起始月份，例如 "2024-01"
-    END_MONTH = "2024-12"  # 结束月份，例如 "2024-06"
+    START_MONTH = "2023-09"  # 起始月份，例如 "2024-01"
+    END_MONTH = "2023-12"  # 结束月份，例如 "2024-06"
 
     datasets_by_month = read_monthly_datasets(OUTPUT_DIR, start_month=START_MONTH, end_month=END_MONTH)
 
     # 打印读取的模型数据
     for month, datasets in datasets_by_month.items():
         print(f"月份: {month}, 模型数量: {len(datasets)}")
-        download_parallel('F:/download_dataset/'+month,datasets)
+        download_parallel('Z:/download_dataset/'+month,datasets)

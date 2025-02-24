@@ -2,6 +2,64 @@ import os
 import subprocess
 import json
 import csv
+import pandas as pd
+import re
+file_pattern = r'"file"\s*:\s*"([^"]+)"'
+raw_pattern = r'"Raw"\s*:\s*"([^"]+)"'
+
+
+# def extractTokenandFile(scan_result):
+#     # 定义正则表达式模式来匹配file和raw字段
+#     file_pattern = r'file_pattern_here'  # 替换为实际的正则表达式
+#     raw_pattern = r'raw_pattern_here'  # 替换为实际的正则表达式
+#
+#     row_data = []  # 用来存储每一行的file和raw信息
+#
+#     # 使用正则表达式查找所有的file字段
+#     files = re.findall(file_pattern, scan_result)
+#     raws = re.findall(raw_pattern, scan_result)
+#
+#     # 将找到的file和raw成对存储（如果数量不匹配，跳过这行）
+#     for file, raw in zip(files, raws):
+#         if ".git" in file:
+#             file = ".git"  # 只记录为'.git'
+#         else:
+#             file = file.split("//")[-1]
+#         row_data.append({'file': file, 'raw': raw})
+#
+#     # 如果没有找到file和raw信息，插入空值
+#     if not row_data:
+#         row_data.append({'file': None, 'raw': None})
+#
+#     return row_data
+def extractTokenandFile(scan_result):
+    # 遍历findings中的每个条目
+    row_data = []  # 用来存储每一行的file和raw信息
+    scan_result = json.loads(scan_result)
+    for finding in scan_result.get('findings', []):
+        # 检查SourceMetadata是否存在
+        source_metadata = finding.get('SourceMetadata')
+        if source_metadata:
+            # 从SourceMetadata提取file和Raw
+            source_data = source_metadata.get('Data', {})
+            filesystem_data = source_data.get('Filesystem', {})
+
+            file_info = filesystem_data.get('file')
+            raw_info = finding.get('Raw')
+
+            if file_info and raw_info:
+                if ".git" in file_info:
+                    file_info = ".git"  # 只记录为'.git'
+                else:
+                    file_info = file_info.split("//")[-1]
+                # 将提取的file和Raw信息存入字典
+                row_data.append({
+                    'file': file_info,
+                    'raw': raw_info
+                })
+    return row_data
+
+
 
 
 def scan_with_trufflehog(folder_path):
@@ -33,7 +91,7 @@ def scan_with_trufflehog(folder_path):
         if json_objects[-1]["verified_secrets"] == 0 and json_objects[-1]["unverified_secrets"] == 0:
             print(f"没有发现敏感信息: {folder_path}")
             merged_json = {"findings": []}
-            return merged_json  # 返回空表示没有结果
+            return None  # 返回空表示没有结果
         else:
             print(f"发现敏感信息: {folder_path}")
             merged_json = {"findings": json_objects}
@@ -120,7 +178,9 @@ def process_single_folder(folder_path, output_dir):
             if result:  # 如果有扫描结果
                 # 将子文件夹名称（仓库名称）和扫描结果保存到列表
                 repository_name, scan_result = result
-                scan_results.append([repository_name.replace("_", "/"), scan_result])
+                print(scan_result)
+                extract_info =extractTokenandFile(scan_result)
+                scan_results.append([repository_name.replace("_", "/"), scan_result,str(extract_info)])
 
     # 如果有扫描结果，保存到 CSV
     if scan_results:
@@ -131,17 +191,14 @@ def process_single_folder(folder_path, output_dir):
         print(f"没有在 {folder_path} 中找到任何敏感信息。")
 
 
-
-
-
 if __name__ == "__main__":
     # 定义根目录和输出结果根目录
     # root_dir = "E:/download_space"
-    trufflehog_output_dir = "E:/download_space/trufflehog_scan_results"
+    trufflehog_output_dir = "F:/download_space/trufflehog_scan_results_test"
     #
     # # 调用根目录处理函数
     # process_root_directory(root_dir, trufflehog_output_dir)
 
     # 示例：扫描一个新添加的文件夹（例如 "E:/download_space/2024-12"）
-    new_folder_path = "E:/download_space/2024-12"
+    new_folder_path = "F:/download_space/2022-03-test"
     process_single_folder(new_folder_path, trufflehog_output_dir)

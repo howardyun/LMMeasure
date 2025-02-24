@@ -4,6 +4,32 @@ import json
 import csv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+def extractTokenandFile(scan_result):
+    # 遍历findings中的每个条目
+    row_data = []  # 用来存储每一行的file和raw信息
+    scan_result = json.loads(scan_result)
+    for finding in scan_result.get('findings', []):
+        # 检查SourceMetadata是否存在
+        source_metadata = finding.get('SourceMetadata')
+        if source_metadata:
+            # 从SourceMetadata提取file和Raw
+            source_data = source_metadata.get('Data', {})
+            filesystem_data = source_data.get('Filesystem', {})
+
+            file_info = filesystem_data.get('file')
+            raw_info = finding.get('Raw')
+
+            if file_info and raw_info:
+                if ".git" in file_info:
+                    file_info = ".git"  # 只记录为'.git'
+                else:
+                    file_info = file_info.split("\\")[-1]
+                # 将提取的file和Raw信息存入字典
+                row_data.append({
+                    'file': file_info,
+                    'raw': raw_info
+                })
+    return row_data
 
 def scan_with_trufflehog(folder_path):
     """
@@ -105,8 +131,9 @@ def process_single_folder_parallel_csv(folder_path, output_dir, max_workers=4):
                 result = future.result()
                 if result:  # 如果有扫描结果
                     repository_name, scan_result = result
+                    extract_info = extractTokenandFile(scan_result)
                     scan_result = str(scan_result)[:3000]
-                    scan_results.append([repository_name.replace("_", "/"), str(scan_result)])
+                    scan_results.append([repository_name.replace("_", "/"), str(scan_result),str(extract_info)])
             except Exception as e:
                 print(f"扫描 {subfolder} 时发生错误: {e}")
 
@@ -162,14 +189,14 @@ def process_single_folder_parallel_json(folder_path, output_dir, max_workers=4):
 
 if __name__ == "__main__":
     # 定义根目录和输出结果根目录
-    trufflehog_output_dir = "E:/download_space/trufflehog_scan_results"
+    trufflehog_output_dir = "E:/download_space/trufflehog_scan_results_new"
     os.makedirs(trufflehog_output_dir, exist_ok=True)  # 如果目录不存在，则创建
 
     # 示例：并行扫描一个新添加的文件夹（例如 "E:/download_space/2024-12"）
-    for i in range(12,13):
+    for i in range(1,3):
         new_folder_path = ''
         if i <10:
-            new_folder_path = "E:/download_space/2024-0"+str(i)
+            new_folder_path = "E:/download_space/2025-0"+str(i)
         else:
-            new_folder_path = "E:/download_space/2024-" + str(i)
+            new_folder_path = "E:/download_space/2025-" + str(i)
         process_single_folder_parallel_csv(new_folder_path, trufflehog_output_dir, max_workers=8)
