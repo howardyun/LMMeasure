@@ -101,11 +101,11 @@ def download_parallel(download_dir, modelhub_list):
 if __name__ == "__main__":
     OUTPUT_DIR = "monthly_spaceId_files"  # 存储模型文件的目录
     START_MONTH = "2025-01"  # 起始月份，例如 "2024-01"
-    END_MONTH = "2025-02"  # 结束月份，例如 "2024-06"
+    END_MONTH = "2025-05"  # 结束月份，例如 "2024-06"
 
     models_by_month = read_monthly_models(OUTPUT_DIR, start_month=START_MONTH, end_month=END_MONTH)
 
     # 打印读取的模型数据
     for month, models in models_by_month.items():
         print(f"月份: {month}, 模型数量: {len(models)}")
-        download_parallel('E:/download_space/'+month,models)
+        download_parallel('Z:/download_space/'+month,models)

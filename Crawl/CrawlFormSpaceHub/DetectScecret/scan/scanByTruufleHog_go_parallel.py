@@ -18,16 +18,17 @@ def extractTokenandFile(scan_result):
 
             file_info = filesystem_data.get('file')
             raw_info = finding.get('Raw')
-
+            detector_name = finding.get('DetectorName')
             if file_info and raw_info:
                 if ".git" in file_info:
                     file_info = ".git"  # 只记录为'.git'
                 else:
-                    file_info = file_info.split("\\")[-1]
+                    file_info = file_info.split("//")[-1]
                 # 将提取的file和Raw信息存入字典
                 row_data.append({
                     'file': file_info,
-                    'raw': raw_info
+                    'raw': raw_info,
+                    'detector_name':detector_name
                 })
     return row_data
 

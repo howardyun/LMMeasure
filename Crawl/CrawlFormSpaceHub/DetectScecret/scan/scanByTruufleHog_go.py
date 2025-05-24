@@ -46,7 +46,7 @@ def extractTokenandFile(scan_result):
 
             file_info = filesystem_data.get('file')
             raw_info = finding.get('Raw')
-
+            detector_name = finding.get('DetectorName')
             if file_info and raw_info:
                 if ".git" in file_info:
                     file_info = ".git"  # 只记录为'.git'
@@ -55,7 +55,8 @@ def extractTokenandFile(scan_result):
                 # 将提取的file和Raw信息存入字典
                 row_data.append({
                     'file': file_info,
-                    'raw': raw_info
+                    'raw': raw_info,
+                    'detector_name':detector_name
                 })
     return row_data
 
@@ -86,6 +87,8 @@ def scan_with_trufflehog(folder_path):
         json_strings = result.stdout.split('\n')
         # 转换为 JSON 对象列表
         json_objects = [json.loads(js) for js in json_strings if js.strip()]
+
+        print(json_objects)
 
         # 检查最后一个 JSON 对象中的 verified_secrets 和 unverified_secrets
         if json_objects[-1]["verified_secrets"] == 0 and json_objects[-1]["unverified_secrets"] == 0:
